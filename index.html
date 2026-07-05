@@ -7,15 +7,16 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .container { background: white; border-radius: 24px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1); padding: 30px 40px; max-width: 1000px; width: 100%; transition: all 0.2s; }
+        .container { background: white; border-radius: 24px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1); padding: 30px 40px; max-width: 1000px; width: 100%; }
         h1 { font-size: 26px; color: #1e293b; margin-bottom: 6px; text-align: center; font-weight: 700; }
         .subtitle { text-align: center; color: #64748b; font-size: 16px; margin-bottom: 12px; border-bottom: 2px solid #e9edf2; padding-bottom: 18px; }
         .status-box { background: #f1f5f9; padding: 12px 18px; border-radius: 40px; text-align: center; font-size: 15px; color: #1e293b; margin-bottom: 20px; border: 1px solid #e2e8f0; display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
         .status-box .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-retry { background: #eef2ff; border: none; color: #2563eb; padding: 6px 18px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.15s; }
+        .btn-retry:hover { background: #dbeafe; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 30px; }
-        .stat-card { background: #f8fafc; border-radius: 16px; padding: 18px 12px 14px; text-align: center; border: 1px solid #e2e8f0; transition: 0.15s; }
-        .stat-card:hover { background: #f1f5f9; border-color: #cbd5e1; }
+        .stat-card { background: #f8fafc; border-radius: 16px; padding: 18px 12px 14px; text-align: center; border: 1px solid #e2e8f0; }
         .stat-city { font-size: 17px; font-weight: 600; color: #0f172a; margin-bottom: 6px; }
         .stat-number { font-size: 32px; font-weight: 700; color: #2563eb; line-height: 1.2; }
         .stat-label { font-size: 13px; color: #64748b; margin-top: 4px; }
@@ -28,7 +29,7 @@
         .footer-note { margin-top: 24px; font-size: 14px; color: #64748b; text-align: center; background: #f8fafc; padding: 12px 16px; border-radius: 40px; border: 1px solid #e9edf2; }
         .footer-note strong { color: #0f172a; }
         .info-badge { background: #dbeafe; border-radius: 30px; padding: 4px 14px; font-size: 13px; color: #1e40af; display: inline-block; margin-right: 12px; }
-        .error-placeholder { padding: 30px; text-align: center; color: #dc2626; background: #fef2f2; border-radius: 16px; border: 1px solid #fecaca; }
+        .last-update { font-size: 13px; color: #64748b; margin-top: 8px; }
         @media (max-width: 600px) { .container { padding: 20px 16px; } h1 { font-size: 21px; } .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; } .stat-card { padding: 12px 6px; } .stat-number { font-size: 26px; } .stat-city { font-size: 15px; } .status-box { font-size: 13px; padding: 10px 14px; } }
         @media (max-width: 420px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
@@ -38,16 +39,13 @@
     <h1>📊 إحصاء بيانات طالبات التحصين</h1>
     <div class="subtitle">ولايات شمال الباطنة · عدد الأرقام المسجلة في كل عمود</div>
 
-    <!-- حالة التحميل -->
     <div class="status-box" id="statusBox">
         <span class="spinner" id="loaderSpinner" style="display:none;"></span>
         <span id="statusText">⏳ جاري تحميل البيانات...</span>
+        <button class="btn-retry" id="retryBtn">🔄 إعادة المحاولة</button>
     </div>
 
-    <!-- بطاقات الإحصاء -->
     <div class="stats-grid" id="statsGrid"></div>
-
-    <!-- الجدول التفصيلي -->
     <div class="table-wrapper">
         <table>
             <thead><tr><th>#</th><th>الولاية</th><th>عدد البيانات</th><th>حالة العمود</th></tr></thead>
@@ -59,30 +57,36 @@
         <strong>إجمالي البيانات:</strong> <span id="totalCount">0</span> رقم ·
         <strong>المدن:</strong> <span id="cityCount">0</span>
         <span class="info-badge" id="dataSourceBadge">🌐 مباشر</span>
+        <div class="last-update" id="lastUpdateTime"></div>
     </div>
 </div>
 
 <script>
     (function() {
-        // --- الرابط الصحيح لملف CSV (الرابط الذي أرسلته) ---
+        // --- الرابط الأصلي لملف CSV ---
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-q_lptpKbStQ7FpqLZgCJebAsO5Fc7Y4ZvHIbSjZQZsj6vF6vKXcHAXmgwjrGB9hUlqPRefhQf1s_/pub?gid=0&single=true&output=csv';
-        
-        // --- استخدام وسيط (Proxy) لتجاوز مشكلة CORS ---
-        const PROXY_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(CSV_URL);
-        // يمكنك تجربة هذا الوسيط البديل إذا تعذر الأول:
-        // const PROXY_URL = 'https://corsproxy.io/?' + encodeURIComponent(CSV_URL);
 
-        // مدة التحديث التلقائي (بالمللي ثانية) - 60 ثانية
-        const REFRESH_INTERVAL = 60000;
+        // --- قائمة بالبروكسيات المتاحة ---
+        const PROXIES = [
+            'https://api.allorigins.win/raw?url=',
+            'https://corsproxy.io/?',
+            'https://api.codetabs.com/v1/proxy?quest='
+        ];
 
         // --- عناصر DOM ---
         const statusText = document.getElementById('statusText');
         const loaderSpinner = document.getElementById('loaderSpinner');
+        const retryBtn = document.getElementById('retryBtn');
         const statsGrid = document.getElementById('statsGrid');
         const tableBody = document.getElementById('tableBody');
         const totalSpan = document.getElementById('totalCount');
         const citySpan = document.getElementById('cityCount');
         const badge = document.getElementById('dataSourceBadge');
+        const lastUpdateTime = document.getElementById('lastUpdateTime');
+
+        // --- متغيرات لتخزين البيانات الحالية ---
+        let currentData = { headers: [], counts: [] };
+        let isFetching = false;
 
         // --- دالة تحليل وعرض البيانات ---
         function parseAndRender(csvText) {
@@ -97,7 +101,6 @@
                 rows.push(row);
             }
 
-            // حساب عدد القيم غير الفارغة في كل عمود
             const counts = headers.map(() => 0);
             for (const row of rows) {
                 for (let j = 0; j < row.length && j < headers.length; j++) {
@@ -106,6 +109,9 @@
                     }
                 }
             }
+
+            // تخزين البيانات الحالية
+            currentData = { headers, counts };
 
             // --- عرض البطاقات ---
             statsGrid.innerHTML = '';
@@ -137,43 +143,120 @@
                 tableBody.appendChild(tr);
             });
 
-            // --- عرض الملخص ---
             totalSpan.textContent = total;
             citySpan.textContent = headers.length;
             badge.textContent = '🌐 مباشر';
         }
 
-        // --- دالة جلب البيانات من Google Sheets عبر الوكيل ---
-        async function fetchData() {
-            statusText.innerHTML = '⏳ جاري تحديث البيانات...';
+        // --- دالة جلب البيانات عبر محاولة عدة بروكسيات ---
+        async function fetchDataWithProxies() {
+            if (isFetching) return;
+            isFetching = true;
             loaderSpinner.style.display = 'inline-block';
+            statusText.innerHTML = '⏳ جاري تحديث البيانات...';
+            retryBtn.disabled = true;
 
-            try {
-                const response = await fetch(PROXY_URL);
-                if (!response.ok) throw new Error(`فشل الاتصال (${response.status})`);
-                const csvText = await response.text();
+            let success = false;
+            let lastError = null;
 
-                // التحقق من صحة البيانات
-                if (csvText.includes('<html') || !csvText.includes(',')) {
-                    throw new Error('البيانات المسترجعة ليست بصيغة CSV صالحة.');
+            for (let proxy of PROXIES) {
+                try {
+                    const url = proxy + encodeURIComponent(CSV_URL);
+                    const response = await fetch(url, { signal: AbortSignal.timeout(15000) }); // مهلة 15 ثانية
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const csvText = await response.text();
+
+                    // التحقق من صحة المحتوى
+                    if (csvText.includes('<html') || !csvText.includes(',')) {
+                        throw new Error('البيانات ليست بصيغة CSV صالحة');
+                    }
+
+                    // نجاح
+                    parseAndRender(csvText);
+                    statusText.innerHTML = '✅ تم تحديث البيانات بنجاح';
+                    lastUpdateTime.textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString();
+                    success = true;
+                    break;
+
+                } catch (error) {
+                    lastError = error;
+                    console.warn(`فشل البروكسي ${proxy}:`, error);
+                    continue;
                 }
-
-                parseAndRender(csvText);
-                statusText.innerHTML = '✅ تم تحديث البيانات بنجاح';
-                loaderSpinner.style.display = 'none';
-
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                statusText.innerHTML = `⚠️ فشل التحديث: ${error.message || 'خطأ غير معروف'}`;
-                loaderSpinner.style.display = 'none';
-                // الاحتفاظ بالبيانات السابقة في حال فشل التحديث
             }
+
+            if (!success) {
+                statusText.innerHTML = `⚠️ فشل التحديث: ${lastError?.message || 'خطأ غير معروف'}`;
+                // إذا كانت هناك بيانات سابقة، نعرضها مع تنبيه
+                if (currentData.headers.length > 0) {
+                    // إعادة عرض البيانات القديمة (محفوظة)
+                    parseAndRenderFromCurrent();
+                    statusText.innerHTML += ' (عرض البيانات السابقة)';
+                }
+            }
+
+            loaderSpinner.style.display = 'none';
+            retryBtn.disabled = false;
+            isFetching = false;
         }
 
-        // --- تشغيل التحديث الفوري والتلقائي ---
-        fetchData();
-        setInterval(fetchData, REFRESH_INTERVAL);
-        console.log(`✅ تم الإعداد، سيتم التحديث كل ${REFRESH_INTERVAL / 1000} ثانية.`);
+        // --- دالة لعرض البيانات المخزنة مسبقاً (في حال الفشل) ---
+        function parseAndRenderFromCurrent() {
+            const { headers, counts } = currentData;
+            if (!headers || headers.length === 0) return;
+
+            statsGrid.innerHTML = '';
+            headers.forEach((city, idx) => {
+                const card = document.createElement('div');
+                card.className = 'stat-card';
+                card.innerHTML = `
+                    <div class="stat-city">${city}</div>
+                    <div class="stat-number">${counts[idx] || 0}</div>
+                    <div class="stat-label">رقم مسجل</div>
+                `;
+                statsGrid.appendChild(card);
+            });
+
+            tableBody.innerHTML = '';
+            let total = 0;
+            headers.forEach((city, idx) => {
+                total += counts[idx] || 0;
+                const tr = document.createElement('tr');
+                if (idx % 2 === 0) tr.classList.add('highlight-row');
+                const status = (counts[idx] || 0) > 0 ? '✅ نشط' : '⚪ فارغ';
+                tr.innerHTML = `
+                    <td>${idx + 1}</td>
+                    <td><strong>${city}</strong></td>
+                    <td>${counts[idx] || 0}</td>
+                    <td>${status}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            totalSpan.textContent = total;
+            citySpan.textContent = headers.length;
+            badge.textContent = '📁 مخبأ';
+        }
+
+        // --- تحميل البيانات المخزنة مسبقاً (إن وجدت) ---
+        // نبدأ ببيانات فارغة، لكن سنحاول جلبها فوراً.
+        // نضع بيانات افتراضية لمنع ظهور شاشة فارغة مؤقتاً (اختياري).
+        // لكننا نفضل تركها فارغة مع رسالة "جاري التحميل".
+
+        // --- إعادة المحاولة يدوياً ---
+        retryBtn.addEventListener('click', fetchDataWithProxies);
+
+        // --- التحديث التلقائي كل دقيقة ---
+        setInterval(fetchDataWithProxies, 60000);
+
+        // --- بدء التحميل الأول ---
+        fetchDataWithProxies();
+
+        console.log('✅ تم تهيئة الصفحة، سيتم التحديث كل 60 ثانية.');
     })();
 </script>
 </body>
