@@ -157,11 +157,11 @@
   <div class="subtitle">طالبات التحصين في شمال الباطنة</div>
 
   <div class="controls">
-    <input type="text" id="sheetUrl" value="https://docs.google.com/spreadsheets/d/15dF7L38o_aaMixbHMAyJxVWiEeZ3bCQkGU9HqQAPC14/edit?usp=sharing" placeholder="رابط جدول جوجل شيت">
-    <button id="loadBtn" onclick="loadSheet()">تحديث البيانات</button>
+    <button id="loadBtn" onclick="loadSheet()">تحديث البيانات الآن</button>
   </div>
 
   <div class="status" id="status">جارٍ التحميل...</div>
+  <div class="status" id="countdown" style="font-size:12px;"></div>
 
   <div class="summary" id="summary" style="display:none;"></div>
 
@@ -180,6 +180,11 @@
 </div>
 
 <script>
+// ===== رابط جدول جوجل شيت (ثابت) =====
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/15dF7L38o_aaMixbHMAyJxVWiEeZ3bCQkGU9HqQAPC14/edit?usp=sharing";
+const REFRESH_INTERVAL_SECONDS = 30;
+// =====================================
+
 function extractSheetId(url){
   const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
   return match ? match[1] : null;
@@ -219,8 +224,7 @@ async function loadSheet(){
   const summary = document.getElementById('summary');
   const body = document.getElementById('resultBody');
 
-  const url = document.getElementById('sheetUrl').value.trim();
-  const sheetId = extractSheetId(url);
+  const sheetId = extractSheetId(SHEET_URL);
 
   if(!sheetId){
     statusEl.textContent = 'رابط الجدول غير صالح. الرجاء التأكد من الرابط.';
@@ -293,11 +297,41 @@ async function loadSheet(){
     statusEl.textContent = err.message || 'حدث خطأ أثناء تحميل البيانات.';
   } finally {
     btn.disabled = false;
+    resetCountdown();
   }
 }
 
-// تحميل تلقائي عند فتح الصفحة
-window.addEventListener('DOMContentLoaded', loadSheet);
+// ===== التحديث التلقائي كل 30 ثانية =====
+let secondsLeft = REFRESH_INTERVAL_SECONDS;
+let countdownTimer = null;
+
+function resetCountdown(){
+  secondsLeft = REFRESH_INTERVAL_SECONDS;
+  updateCountdownText();
+}
+
+function updateCountdownText(){
+  const el = document.getElementById('countdown');
+  if(el) el.textContent = `التحديث التلقائي التالي خلال ${secondsLeft} ثانية`;
+}
+
+function startCountdown(){
+  if(countdownTimer) clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => {
+    secondsLeft--;
+    if(secondsLeft <= 0){
+      loadSheet();
+    } else {
+      updateCountdownText();
+    }
+  }, 1000);
+}
+
+// تحميل تلقائي عند فتح الصفحة + بدء العد التنازلي
+window.addEventListener('DOMContentLoaded', () => {
+  loadSheet();
+  startCountdown();
+});
 </script>
 </body>
 </html>
