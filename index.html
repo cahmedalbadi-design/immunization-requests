@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إحصاء بيانات طالبات التحصين - شمال الباطنة</title>
     <style>
-        /* ... (保持之前的所有样式不变) ... */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .container { background: white; border-radius: 24px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1); padding: 30px 40px; max-width: 1000px; width: 100%; transition: all 0.2s; }
@@ -65,13 +64,18 @@
 
 <script>
     (function() {
-        // --- 配置区 ---
-        // ⚠️ 重要：请将此URL替换为你从“发布到网络”功能获取的CSV链接
-        const CSV_URL = 'YOUR_PUBLISHED_CSV_URL';
-        // 自动刷新间隔（毫秒），例如 60000 为1分钟
-        const REFRESH_INTERVAL = 60000; 
+        // --- الرابط الصحيح لملف CSV (الرابط الذي أرسلته) ---
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-q_lptpKbStQ7FpqLZgCJebAsO5Fc7Y4ZvHIbSjZQZsj6vF6vKXcHAXmgwjrGB9hUlqPRefhQf1s_/pub?gid=0&single=true&output=csv';
+        
+        // --- استخدام وسيط (Proxy) لتجاوز مشكلة CORS ---
+        const PROXY_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(CSV_URL);
+        // يمكنك تجربة هذا الوسيط البديل إذا تعذر الأول:
+        // const PROXY_URL = 'https://corsproxy.io/?' + encodeURIComponent(CSV_URL);
 
-        // --- DOM 元素 ---
+        // مدة التحديث التلقائي (بالمللي ثانية) - 60 ثانية
+        const REFRESH_INTERVAL = 60000;
+
+        // --- عناصر DOM ---
         const statusText = document.getElementById('statusText');
         const loaderSpinner = document.getElementById('loaderSpinner');
         const statsGrid = document.getElementById('statsGrid');
@@ -80,7 +84,7 @@
         const citySpan = document.getElementById('cityCount');
         const badge = document.getElementById('dataSourceBadge');
 
-        // --- 核心函数：解析CSV并渲染 ---
+        // --- دالة تحليل وعرض البيانات ---
         function parseAndRender(csvText) {
             const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
             if (lines.length === 0) throw new Error('الملف فارغ أو لا يحتوي على بيانات.');
@@ -93,7 +97,7 @@
                 rows.push(row);
             }
 
-            // 计算每列非空数量
+            // حساب عدد القيم غير الفارغة في كل عمود
             const counts = headers.map(() => 0);
             for (const row of rows) {
                 for (let j = 0; j < row.length && j < headers.length; j++) {
@@ -103,8 +107,7 @@
                 }
             }
 
-            // --- 渲染 ---
-            // 1. 卡片
+            // --- عرض البطاقات ---
             statsGrid.innerHTML = '';
             headers.forEach((city, idx) => {
                 const card = document.createElement('div');
@@ -117,7 +120,7 @@
                 statsGrid.appendChild(card);
             });
 
-            // 2. 表格
+            // --- عرض الجدول ---
             tableBody.innerHTML = '';
             let total = 0;
             headers.forEach((city, idx) => {
@@ -134,23 +137,23 @@
                 tableBody.appendChild(tr);
             });
 
-            // 3. 摘要
+            // --- عرض الملخص ---
             totalSpan.textContent = total;
             citySpan.textContent = headers.length;
             badge.textContent = '🌐 مباشر';
         }
 
-        // --- 从Google Sheets获取数据 ---
+        // --- دالة جلب البيانات من Google Sheets عبر الوكيل ---
         async function fetchData() {
             statusText.innerHTML = '⏳ جاري تحديث البيانات...';
             loaderSpinner.style.display = 'inline-block';
 
             try {
-                const response = await fetch(CSV_URL);
+                const response = await fetch(PROXY_URL);
                 if (!response.ok) throw new Error(`فشل الاتصال (${response.status})`);
                 const csvText = await response.text();
 
-                // 简单校验
+                // التحقق من صحة البيانات
                 if (csvText.includes('<html') || !csvText.includes(',')) {
                     throw new Error('البيانات المسترجعة ليست بصيغة CSV صالحة.');
                 }
@@ -163,11 +166,11 @@
                 console.error('Error fetching data:', error);
                 statusText.innerHTML = `⚠️ فشل التحديث: ${error.message || 'خطأ غير معروف'}`;
                 loaderSpinner.style.display = 'none';
-                // 不清除已有数据，保留上次成功加载的内容
+                // الاحتفاظ بالبيانات السابقة في حال فشل التحديث
             }
         }
 
-        // --- 启动：首次加载 & 定时刷新 ---
+        // --- تشغيل التحديث الفوري والتلقائي ---
         fetchData();
         setInterval(fetchData, REFRESH_INTERVAL);
         console.log(`✅ تم الإعداد، سيتم التحديث كل ${REFRESH_INTERVAL / 1000} ثانية.`);
