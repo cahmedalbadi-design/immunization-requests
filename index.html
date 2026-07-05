@@ -5,364 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إحصاء بيانات طالبات التحصين - شمال الباطنة</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f4f8;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-            padding: 30px 40px;
-            max-width: 1000px;
-            width: 100%;
-            transition: all 0.2s;
-        }
-        h1 {
-            font-size: 26px;
-            color: #1e293b;
-            margin-bottom: 6px;
-            text-align: center;
-            font-weight: 700;
-        }
-        .subtitle {
-            text-align: center;
-            color: #64748b;
-            font-size: 16px;
-            margin-bottom: 12px;
-            border-bottom: 2px solid #e9edf2;
-            padding-bottom: 18px;
-        }
-        .source-link {
-            text-align: center;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        .source-link a {
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 500;
-            word-break: break-all;
-        }
-        .source-link a:hover {
-            text-decoration: underline;
-        }
-        .status-box {
-            background: #f1f5f9;
-            padding: 12px 18px;
-            border-radius: 40px;
-            text-align: center;
-            font-size: 15px;
-            color: #1e293b;
-            margin-bottom: 25px;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .status-box .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #e2e8f0;
-            border-top-color: #2563eb;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .btn-retry {
-            background: #eef2ff;
-            border: none;
-            color: #2563eb;
-            padding: 6px 18px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.15s;
-            display: none;
-        }
-        .btn-retry:hover {
-            background: #dbeafe;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 16px;
-            margin-bottom: 30px;
-        }
-        .stat-card {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 18px 12px 14px;
-            text-align: center;
-            border: 1px solid #e2e8f0;
-            transition: 0.15s;
-        }
-        .stat-card:hover {
-            background: #f1f5f9;
-            border-color: #cbd5e1;
-        }
-        .stat-city {
-            font-size: 17px;
-            font-weight: 600;
-            color: #0f172a;
-            margin-bottom: 6px;
-        }
-        .stat-number {
-            font-size: 32px;
-            font-weight: 700;
-            color: #2563eb;
-            line-height: 1.2;
-        }
-        .stat-label {
-            font-size: 13px;
-            color: #64748b;
-            margin-top: 4px;
-        }
-        .table-wrapper {
-            overflow-x: auto;
-            border-radius: 14px;
-            border: 1px solid #e2e8f0;
-            background: #fafcff;
-            margin-top: 8px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            text-align: center;
-            min-width: 480px;
-        }
-        th {
-            background: #f1f5f9;
-            color: #1e293b;
-            font-weight: 600;
-            padding: 14px 10px;
-            border-bottom: 2px solid #d1d9e6;
-            font-size: 15px;
-        }
-        td {
-            padding: 11px 10px;
-            border-bottom: 1px solid #e9edf2;
-            color: #1e293b;
-            font-feature-settings: "tnum";
-        }
-        tr:last-child td {
-            border-bottom: none;
-        }
-        .highlight-row {
-            background: #f8fafc;
-        }
-        .footer-note {
-            margin-top: 24px;
-            font-size: 14px;
-            color: #64748b;
-            text-align: center;
-            background: #f8fafc;
-            padding: 12px 16px;
-            border-radius: 40px;
-            border: 1px solid #e9edf2;
-        }
-        .footer-note strong {
-            color: #0f172a;
-        }
-        .upload-section {
-            margin-top: 28px;
-            padding-top: 22px;
-            border-top: 2px dashed #dce2ea;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-        .upload-section label {
-            background: #f1f5f9;
-            padding: 10px 24px;
-            border-radius: 40px;
-            font-weight: 500;
-            color: #1e293b;
-            cursor: pointer;
-            border: 1px solid #cbd5e1;
-            transition: 0.15s;
-            font-size: 15px;
-        }
-        .upload-section label:hover {
-            background: #e2e8f0;
-            border-color: #94a3b8;
-        }
-        .upload-section input[type="file"] {
-            display: none;
-        }
-        .upload-status {
-            font-size: 14px;
-            color: #475569;
-        }
-        .btn-reset {
-            background: none;
-            border: none;
-            color: #2563eb;
-            font-weight: 500;
-            cursor: pointer;
-            font-size: 14px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            transition: 0.1s;
-        }
-        .btn-reset:hover {
-            background: #eef2ff;
-        }
-        .error-placeholder {
-            padding: 30px;
-            text-align: center;
-            color: #dc2626;
-            background: #fef2f2;
-            border-radius: 16px;
-            border: 1px solid #fecaca;
-        }
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px 16px;
-            }
-            h1 {
-                font-size: 21px;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
-            }
-            .stat-card {
-                padding: 12px 6px;
-            }
-            .stat-number {
-                font-size: 26px;
-            }
-            .stat-city {
-                font-size: 15px;
-            }
-            .status-box {
-                font-size: 13px;
-                padding: 10px 14px;
-            }
-        }
-        @media (max-width: 420px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+        /* ... (保持之前的所有样式不变) ... */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: white; border-radius: 24px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1); padding: 30px 40px; max-width: 1000px; width: 100%; transition: all 0.2s; }
+        h1 { font-size: 26px; color: #1e293b; margin-bottom: 6px; text-align: center; font-weight: 700; }
+        .subtitle { text-align: center; color: #64748b; font-size: 16px; margin-bottom: 12px; border-bottom: 2px solid #e9edf2; padding-bottom: 18px; }
+        .status-box { background: #f1f5f9; padding: 12px 18px; border-radius: 40px; text-align: center; font-size: 15px; color: #1e293b; margin-bottom: 20px; border: 1px solid #e2e8f0; display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .status-box .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 30px; }
+        .stat-card { background: #f8fafc; border-radius: 16px; padding: 18px 12px 14px; text-align: center; border: 1px solid #e2e8f0; transition: 0.15s; }
+        .stat-card:hover { background: #f1f5f9; border-color: #cbd5e1; }
+        .stat-city { font-size: 17px; font-weight: 600; color: #0f172a; margin-bottom: 6px; }
+        .stat-number { font-size: 32px; font-weight: 700; color: #2563eb; line-height: 1.2; }
+        .stat-label { font-size: 13px; color: #64748b; margin-top: 4px; }
+        .table-wrapper { overflow-x: auto; border-radius: 14px; border: 1px solid #e2e8f0; background: #fafcff; margin-top: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: center; min-width: 480px; }
+        th { background: #f1f5f9; color: #1e293b; font-weight: 600; padding: 14px 10px; border-bottom: 2px solid #d1d9e6; font-size: 15px; }
+        td { padding: 11px 10px; border-bottom: 1px solid #e9edf2; color: #1e293b; }
+        tr:last-child td { border-bottom: none; }
+        .highlight-row { background: #f8fafc; }
+        .footer-note { margin-top: 24px; font-size: 14px; color: #64748b; text-align: center; background: #f8fafc; padding: 12px 16px; border-radius: 40px; border: 1px solid #e9edf2; }
+        .footer-note strong { color: #0f172a; }
+        .info-badge { background: #dbeafe; border-radius: 30px; padding: 4px 14px; font-size: 13px; color: #1e40af; display: inline-block; margin-right: 12px; }
+        .error-placeholder { padding: 30px; text-align: center; color: #dc2626; background: #fef2f2; border-radius: 16px; border: 1px solid #fecaca; }
+        @media (max-width: 600px) { .container { padding: 20px 16px; } h1 { font-size: 21px; } .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; } .stat-card { padding: 12px 6px; } .stat-number { font-size: 26px; } .stat-city { font-size: 15px; } .status-box { font-size: 13px; padding: 10px 14px; } }
+        @media (max-width: 420px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
 </head>
 <body>
-
-<div class="container" id="appContainer">
+<div class="container">
     <h1>📊 إحصاء بيانات طالبات التحصين</h1>
     <div class="subtitle">ولايات شمال الباطنة · عدد الأرقام المسجلة في كل عمود</div>
 
-    <!-- رابط المصدر -->
-    <div class="source-link">
-        📎 <a href="https://docs.google.com/spreadsheets/d/15dF7L38o_aaMixbHMAyJxVWiEeZ3bCQkGU9HqQAPC14/edit?gid=0" target="_blank">فتح الرابط الأصلي في Google Sheets</a>
-    </div>
-
     <!-- حالة التحميل -->
     <div class="status-box" id="statusBox">
-        <span class="spinner" id="loaderSpinner"></span>
-        <span id="statusText">جاري تحميل البيانات من Google Sheets ...</span>
-        <button class="btn-retry" id="retryBtn">🔄 إعادة المحاولة</button>
+        <span class="spinner" id="loaderSpinner" style="display:none;"></span>
+        <span id="statusText">⏳ جاري تحميل البيانات...</span>
     </div>
 
-    <!-- بطاقات الإحصاء السريع -->
+    <!-- بطاقات الإحصاء -->
     <div class="stats-grid" id="statsGrid"></div>
 
     <!-- الجدول التفصيلي -->
     <div class="table-wrapper">
-        <table id="dataTable">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>الولاية</th>
-                    <th>عدد البيانات</th>
-                    <th>حالة العمود</th>
-                </tr>
-            </thead>
+        <table>
+            <thead><tr><th>#</th><th>الولاية</th><th>عدد البيانات</th><th>حالة العمود</th></tr></thead>
             <tbody id="tableBody"></tbody>
         </table>
     </div>
 
-    <!-- ملخص إضافي -->
-    <div class="footer-note" id="summaryNote">
+    <div class="footer-note">
         <strong>إجمالي البيانات:</strong> <span id="totalCount">0</span> رقم ·
         <strong>المدن:</strong> <span id="cityCount">0</span>
-    </div>
-
-    <!-- رفع ملف CSV (خيار بديل) -->
-    <div class="upload-section">
-        <label for="csvUpload">📂 تحميل ملف CSV بديل (في حال تعذر التحميل)</label>
-        <input type="file" id="csvUpload" accept=".csv">
-        <span class="upload-status" id="uploadStatus">يمكنك رفع ملف CSV بنفس التنسيق لعرض الإحصاء</span>
-        <button class="btn-reset" id="resetBtn" style="display:none;">↺ العودة للبيانات المرفوعة</button>
+        <span class="info-badge" id="dataSourceBadge">🌐 مباشر</span>
     </div>
 </div>
 
 <script>
     (function() {
-        // --------------------------------------------------------------
-        // رابط Google Sheets بصيغة CSV (export)
-        // --------------------------------------------------------------
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/15dF7L38o_aaMixbHMAyJxVWiEeZ3bCQkGU9HqQAPC14/export?format=csv&gid=0';
-        // استخدام وسيط (CORS Proxy) لتجاوز مشكلة السياسة عبر المواقع
-        const PROXY_URL = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(SHEET_URL);
+        // --- 配置区 ---
+        // ⚠️ 重要：请将此URL替换为你从“发布到网络”功能获取的CSV链接
+        const CSV_URL = 'YOUR_PUBLISHED_CSV_URL';
+        // 自动刷新间隔（毫秒），例如 60000 为1分钟
+        const REFRESH_INTERVAL = 60000; 
 
-        // عناصر الواجهة
+        // --- DOM 元素 ---
         const statusText = document.getElementById('statusText');
         const loaderSpinner = document.getElementById('loaderSpinner');
-        const retryBtn = document.getElementById('retryBtn');
         const statsGrid = document.getElementById('statsGrid');
         const tableBody = document.getElementById('tableBody');
         const totalSpan = document.getElementById('totalCount');
         const citySpan = document.getElementById('cityCount');
-        const fileInput = document.getElementById('csvUpload');
-        const uploadStatus = document.getElementById('uploadStatus');
-        const resetBtn = document.getElementById('resetBtn');
+        const badge = document.getElementById('dataSourceBadge');
 
-        // متغير لتخزين آخر CSV تم تحميله (للرجوع إليه)
-        let lastLoadedCSV = '';
-
-        // --------------------------------------------------------------
-        // دوال تحليل CSV
-        // --------------------------------------------------------------
-        function parseCSVToColumns(csvText) {
+        // --- 核心函数：解析CSV并渲染 ---
+        function parseAndRender(csvText) {
             const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
-            if (lines.length === 0) return { headers: [], rows: [] };
+            if (lines.length === 0) throw new Error('الملف فارغ أو لا يحتوي على بيانات.');
 
             const headers = lines[0].split(',').map(h => h.trim());
             const rows = [];
             for (let i = 1; i < lines.length; i++) {
                 const cells = lines[i].split(',');
-                const row = [];
-                for (let j = 0; j < headers.length; j++) {
-                    row.push((j < cells.length) ? cells[j].trim() : '');
-                }
+                const row = headers.map((_, j) => (j < cells.length ? cells[j].trim() : ''));
                 rows.push(row);
             }
-            return { headers, rows };
-        }
 
-        function countNonEmptyPerColumn(headers, rows) {
+            // 计算每列非空数量
             const counts = headers.map(() => 0);
             for (const row of rows) {
                 for (let j = 0; j < row.length && j < headers.length; j++) {
@@ -371,14 +102,9 @@
                     }
                 }
             }
-            return counts;
-        }
 
-        // --------------------------------------------------------------
-        // عرض النتائج
-        // --------------------------------------------------------------
-        function renderStats(headers, counts) {
-            // 1. البطاقات
+            // --- 渲染 ---
+            // 1. 卡片
             statsGrid.innerHTML = '';
             headers.forEach((city, idx) => {
                 const card = document.createElement('div');
@@ -391,7 +117,7 @@
                 statsGrid.appendChild(card);
             });
 
-            // 2. الجدول
+            // 2. 表格
             tableBody.innerHTML = '';
             let total = 0;
             headers.forEach((city, idx) => {
@@ -408,162 +134,44 @@
                 tableBody.appendChild(tr);
             });
 
-            // 3. الملخص
+            // 3. 摘要
             totalSpan.textContent = total;
             citySpan.textContent = headers.length;
+            badge.textContent = '🌐 مباشر';
         }
 
-        function updateDashboard(csvText, fromSource = false) {
-            const { headers, rows } = parseCSVToColumns(csvText);
-            if (headers.length === 0) {
-                throw new Error('لم يتم العثور على بيانات صالحة في الملف.');
-            }
-            const counts = countNonEmptyPerColumn(headers, rows);
-            renderStats(headers, counts);
-            lastLoadedCSV = csvText;
-            if (fromSource) {
-                // تم التحميل من الرابط
-                statusText.innerHTML = '✅ تم تحميل البيانات بنجاح من Google Sheets';
-                loaderSpinner.style.display = 'none';
-                retryBtn.style.display = 'none';
-            }
-        }
-
-        // --------------------------------------------------------------
-        // تحميل البيانات من الرابط
-        // --------------------------------------------------------------
-        async function loadFromGoogleSheets() {
-            statusText.textContent = 'جاري تحميل البيانات من Google Sheets ...';
+        // --- 从Google Sheets获取数据 ---
+        async function fetchData() {
+            statusText.innerHTML = '⏳ جاري تحديث البيانات...';
             loaderSpinner.style.display = 'inline-block';
-            retryBtn.style.display = 'none';
-            uploadStatus.textContent = 'جاري التحميل ...';
 
             try {
-                const response = await fetch(PROXY_URL);
+                const response = await fetch(CSV_URL);
                 if (!response.ok) throw new Error(`فشل الاتصال (${response.status})`);
                 const csvText = await response.text();
 
-                // التحقق من أن النص ليس HTML (خطأ)
-                if (csvText.includes('<html') || csvText.includes('<!DOCTYPE') || csvText.includes('<?xml')) {
-                    throw new Error('تم استقبال صفحة HTML بدلاً من ملف CSV (قد يكون الرابط محمياً أو الوسيط معطلاً)');
+                // 简单校验
+                if (csvText.includes('<html') || !csvText.includes(',')) {
+                    throw new Error('البيانات المسترجعة ليست بصيغة CSV صالحة.');
                 }
 
-                // محاولة التحقق من وجود فواصل
-                if (!csvText.includes(',')) {
-                    throw new Error('البيانات المسترجعة لا تبدو بصيغة CSV صحيحة');
-                }
-
-                updateDashboard(csvText, true);
-                uploadStatus.textContent = '✅ تم التحميل من الرابط بنجاح';
-                resetBtn.style.display = 'none'; // إخفاء زر الرجوع لأنه لا يوجد ملف مرفوع
-                fileInput.value = '';
+                parseAndRender(csvText);
+                statusText.innerHTML = '✅ تم تحديث البيانات بنجاح';
+                loaderSpinner.style.display = 'none';
 
             } catch (error) {
-                console.error('Load error:', error);
-                statusText.innerHTML = `⚠️ فشل التحميل من الرابط: ${error.message || 'خطأ غير معروف'}`;
+                console.error('Error fetching data:', error);
+                statusText.innerHTML = `⚠️ فشل التحديث: ${error.message || 'خطأ غير معروف'}`;
                 loaderSpinner.style.display = 'none';
-                retryBtn.style.display = 'inline-block';
-                uploadStatus.textContent = '❌ يمكنك رفع ملف CSV يدوياً بدلاً من ذلك';
-                // إظهار رسالة فارغة في الجدول
-                statsGrid.innerHTML = `<div class="error-placeholder" style="grid-column:1/-1;">لا توجد بيانات معروضة. حاول إعادة المحاولة أو رفع ملف CSV.</div>`;
-                tableBody.innerHTML = `<tr><td colspan="4" style="padding:30px;color:#dc2626;">تعذر تحميل البيانات</td></tr>`;
-                totalSpan.textContent = '0';
-                citySpan.textContent = '0';
+                // 不清除已有数据，保留上次成功加载的内容
             }
         }
 
-        // --------------------------------------------------------------
-        // رفع ملف CSV يدوياً
-        // --------------------------------------------------------------
-        function handleFileUpload(file) {
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                try {
-                    const text = ev.target.result;
-                    if (!text.includes(',')) {
-                        uploadStatus.textContent = '⚠️ الملف لا يبدو بصيغة CSV صحيحة (يفتقد الفواصل)';
-                        return;
-                    }
-                    const { headers } = parseCSVToColumns(text);
-                    if (headers.length === 0) {
-                        uploadStatus.textContent = '⚠️ الملف فارغ أو لا يحتوي على رؤوس أعمدة';
-                        return;
-                    }
-                    updateDashboard(text, false);
-                    uploadStatus.textContent = `✅ تم تحميل: ${file.name}`;
-                    resetBtn.style.display = 'inline-block';
-                    // إخفاء رسالة التحميل من الرابط
-                    statusText.innerHTML = '📂 عرض بيانات مرفوعة يدوياً';
-                    loaderSpinner.style.display = 'none';
-                    retryBtn.style.display = 'none';
-                } catch (err) {
-                    uploadStatus.textContent = '❌ خطأ في قراءة الملف';
-                    console.error(err);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // --------------------------------------------------------------
-        // أحداث المستخدم
-        // --------------------------------------------------------------
-        fileInput.addEventListener('change', function(e) {
-            const file = this.files[0];
-            if (!file) return;
-            handleFileUpload(file);
-        });
-
-        retryBtn.addEventListener('click', function() {
-            loadFromGoogleSheets();
-        });
-
-        resetBtn.addEventListener('click', function() {
-            if (lastLoadedCSV) {
-                try {
-                    updateDashboard(lastLoadedCSV, false);
-                    uploadStatus.textContent = '↺ تم الرجوع للبيانات السابقة';
-                    fileInput.value = '';
-                    resetBtn.style.display = 'none';
-                    statusText.innerHTML = '📂 عرض بيانات مرفوعة يدوياً';
-                    loaderSpinner.style.display = 'none';
-                    retryBtn.style.display = 'none';
-                } catch(e) {
-                    alert('حدث خطأ أثناء الرجوع للبيانات');
-                }
-            }
-        });
-
-        // --------------------------------------------------------------
-        // دعم السحب والإفلات
-        // --------------------------------------------------------------
-        const container = document.getElementById('appContainer');
-        container.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            container.style.boxShadow = '0 0 0 3px #2563eb, 0 12px 40px rgba(0,0,0,0.1)';
-        });
-        container.addEventListener('dragleave', () => {
-            container.style.boxShadow = '';
-        });
-        container.addEventListener('drop', (e) => {
-            e.preventDefault();
-            container.style.boxShadow = '';
-            const files = e.dataTransfer.files;
-            if (files.length > 0 && files[0].type === 'text/csv') {
-                handleFileUpload(files[0]);
-                fileInput.value = '';
-            } else {
-                uploadStatus.textContent = '⚠️ يُرجى إفلات ملف CSV فقط';
-            }
-        });
-
-        // --------------------------------------------------------------
-        // بدء التحميل فوراً
-        // --------------------------------------------------------------
-        loadFromGoogleSheets();
-
-        console.log('✅ لوحة الإحصاء - جلب البيانات من رابط Google Sheets');
+        // --- 启动：首次加载 & 定时刷新 ---
+        fetchData();
+        setInterval(fetchData, REFRESH_INTERVAL);
+        console.log(`✅ تم الإعداد، سيتم التحديث كل ${REFRESH_INTERVAL / 1000} ثانية.`);
     })();
 </script>
-
 </body>
 </html>
