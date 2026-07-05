@@ -1,448 +1,303 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إحصاء بيانات طالبات التحصين - شمال الباطنة</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .container { background: white; border-radius: 24px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1); padding: 30px 40px; max-width: 1000px; width: 100%; }
-        h1 { font-size: 26px; color: #1e293b; margin-bottom: 6px; text-align: center; font-weight: 700; }
-        .subtitle { text-align: center; color: #64748b; font-size: 16px; margin-bottom: 12px; border-bottom: 2px solid #e9edf2; padding-bottom: 18px; }
-        .status-box { background: #f1f5f9; padding: 12px 18px; border-radius: 40px; text-align: center; font-size: 15px; color: #1e293b; margin-bottom: 20px; border: 1px solid #e2e8f0; display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .status-box .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .btn-retry { background: #eef2ff; border: none; color: #2563eb; padding: 6px 18px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.15s; }
-        .btn-retry:hover { background: #dbeafe; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 30px; }
-        .stat-card { background: #f8fafc; border-radius: 16px; padding: 18px 12px 14px; text-align: center; border: 1px solid #e2e8f0; }
-        .stat-city { font-size: 17px; font-weight: 600; color: #0f172a; margin-bottom: 6px; }
-        .stat-number { font-size: 32px; font-weight: 700; color: #2563eb; line-height: 1.2; }
-        .stat-label { font-size: 13px; color: #64748b; margin-top: 4px; }
-        .table-wrapper { overflow-x: auto; border-radius: 14px; border: 1px solid #e2e8f0; background: #fafcff; margin-top: 8px; }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: center; min-width: 480px; }
-        th { background: #f1f5f9; color: #1e293b; font-weight: 600; padding: 14px 10px; border-bottom: 2px solid #d1d9e6; font-size: 15px; }
-        td { padding: 11px 10px; border-bottom: 1px solid #e9edf2; color: #1e293b; }
-        tr:last-child td { border-bottom: none; }
-        .highlight-row { background: #f8fafc; }
-        .footer-note { margin-top: 24px; font-size: 14px; color: #64748b; text-align: center; background: #f8fafc; padding: 12px 16px; border-radius: 40px; border: 1px solid #e9edf2; }
-        .footer-note strong { color: #0f172a; }
-        .info-badge { background: #dbeafe; border-radius: 30px; padding: 4px 14px; font-size: 13px; color: #1e40af; display: inline-block; margin-right: 12px; }
-        .last-update { font-size: 13px; color: #64748b; margin-top: 8px; }
-        @media (max-width: 600px) { .container { padding: 20px 16px; } h1 { font-size: 21px; } .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; } .stat-card { padding: 12px 6px; } .stat-number { font-size: 26px; } .stat-city { font-size: 15px; } .status-box { font-size: 13px; padding: 10px 14px; } }
-        @media (max-width: 420px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>عداد بيانات الأعمدة - جدول شمال الباطنة</title>
+<style>
+  :root{
+    --primary:#0f766e;
+    --primary-dark:#0b5c56;
+    --bg:#f4f7f6;
+    --card:#ffffff;
+    --border:#e2e8e7;
+    --text:#1f2937;
+    --muted:#6b7280;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Tahoma, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding:24px;
+  }
+  .container{
+    max-width:900px;
+    margin:0 auto;
+  }
+  h1{
+    text-align:center;
+    font-size:22px;
+    color:var(--primary-dark);
+    margin-bottom:4px;
+  }
+  .subtitle{
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    margin-bottom:24px;
+  }
+  .controls{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-bottom:24px;
+  }
+  input[type=text]{
+    flex:1;
+    min-width:260px;
+    padding:10px 14px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-size:14px;
+  }
+  button{
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    font-size:14px;
+    cursor:pointer;
+    transition:background .2s;
+  }
+  button:hover{ background:var(--primary-dark); }
+  button:disabled{ background:#9ca3af; cursor:not-allowed; }
+
+  .status{
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    margin-bottom:16px;
+    min-height:20px;
+  }
+  .status.error{ color:#dc2626; }
+
+  .summary{
+    display:flex;
+    justify-content:center;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+  }
+  .summary .box{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:14px 20px;
+    text-align:center;
+    min-width:120px;
+  }
+  .summary .box .num{
+    font-size:24px;
+    font-weight:700;
+    color:var(--primary-dark);
+  }
+  .summary .box .label{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:4px;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--card);
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(0,0,0,0.06);
+  }
+  thead th{
+    background:var(--primary);
+    color:#fff;
+    padding:12px 10px;
+    font-size:14px;
+    text-align:center;
+  }
+  tbody td{
+    padding:10px;
+    border-bottom:1px solid var(--border);
+    text-align:center;
+    font-size:14px;
+  }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover{ background:#f0fdfa; }
+  .col-name{
+    font-weight:600;
+    color:var(--primary-dark);
+  }
+  .bar-wrap{
+    background:#e5f5f3;
+    border-radius:6px;
+    overflow:hidden;
+    height:10px;
+    width:100%;
+  }
+  .bar{
+    background:var(--primary);
+    height:100%;
+    border-radius:6px;
+  }
+  @media print{
+    .controls, button{ display:none; }
+  }
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:12px;
+    margin-top:24px;
+  }
+</style>
 </head>
 <body>
 <div class="container">
-    <h1>📊 إحصاء بيانات طالبات التحصين</h1>
-    <div class="subtitle">ولايات شمال الباطنة · عدد الأرقام المسجلة في كل عمود</div>
+  <h1>📊 عداد البيانات المسجلة في كل عمود</h1>
+  <div class="subtitle">طالبات التحصين في شمال الباطنة</div>
 
-    <div class="status-box" id="statusBox">
-        <span class="spinner" id="loaderSpinner" style="display:none;"></span>
-        <span id="statusText">⏳ جاري تحميل البيانات...</span>
-        <button class="btn-retry" id="retryBtn">🔄 إعادة المحاولة</button>
-    </div>
+  <div class="controls">
+    <input type="text" id="sheetUrl" value="https://docs.google.com/spreadsheets/d/15dF7L38o_aaMixbHMAyJxVWiEeZ3bCQkGU9HqQAPC14/edit?usp=sharing" placeholder="رابط جدول جوجل شيت">
+    <button id="loadBtn" onclick="loadSheet()">تحديث البيانات</button>
+  </div>
 
-    <div class="stats-grid" id="statsGrid"></div>
-    <div class="table-wrapper">
-        <table>
-            <thead><tr><th>#</th><th>الولاية</th><th>عدد البيانات</th><th>حالة العمود</th></tr></thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-    </div>
+  <div class="status" id="status">جارٍ التحميل...</div>
 
-    <div class="footer-note">
-        <strong>إجمالي البيانات:</strong> <span id="totalCount">0</span> رقم ·
-        <strong>المدن:</strong> <span id="cityCount">0</span>
-        <span class="info-badge" id="dataSourceBadge">📁 مخبأ</span>
-        <div class="last-update" id="lastUpdateTime"></div>
-    </div>
+  <div class="summary" id="summary" style="display:none;"></div>
+
+  <table id="resultTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>اسم العمود</th>
+        <th>عدد البيانات المسجلة</th>
+        <th>النسبة</th>
+      </tr>
+    </thead>
+    <tbody id="resultBody"></tbody>
+  </table>
+
+  <footer>يتم جلب البيانات مباشرة من جدول جوجل شيت (يجب أن يكون الجدول متاحًا للعرض للجميع "Anyone with the link")</footer>
 </div>
 
 <script>
-    (function() {
-        // ============================================================
-        // 1. البيانات المضمنة (نسخة احتياطية كاملة من الملف الأصلي)
-        //    سيتم عرضها فوراً حتى لو فشل الاتصال بالإنترنت
-        // ============================================================
-        const FALLBACK_CSV = `السويق,الخابورة,صحم,صحار,لوى,شناص
-99842286,93666412,97358777,98058589,90462111,95060117
-99636890,99336565,95376645,92052914,98899258,96663986
-95585075,98068096,99669447,97119859,92224569,99707805
-95136616,99386417,99555202,99220328,95251856,91161129
-96256662,92235887,97400747,99773412,99425871,98232320
-99488821,99355223,95387202,99366383,97112551,99478501
-99321186,99232712,99819488,99442567,96112829,96244482
-92269499,95446533,95616098,92247489,92120240,96776111
-95150940,99048991,76774011,99807555,94016261,92510970
-94372087,95600164,99770700,99422692,92952267,99021300
-96677482,99088802,99236690,97888450,,94880740
-99761452,96122233,96767111,99215880,,79079995
-99360444,,95714838,99224125,,99676177
-99810848,,92310179,99725556,,95124474
-93322065,,99889198,98811779,,
-99413353,,99192412,95466950,,
-95228590,,99231812,97759966,,
-96949413,,95970039,96117176,,
-99339880,,99823332,96117176,,
-92511578,,91312923,96117176,,
-97091330,,95086432,96117176,,
-95696792,,71507542,96117176,,
-99231162,,92712582,96117176,,
-99773516,,,99796504,,
-95793887,,,98058589,,
-99251800,,,95050990,,
-99422565,,,92555368,,
-97117071,,,98839998,,
-94006892,,,92284442,,
-99030216,,,92780884,,
-95522771,,,99473593,,
-96021316,,,93335745,,
-77322800,,,,,
-99327006,,,,,
-99315457,,,,,
-96559551,,,,,
-93924597,,,,,
-99740137,,,,,
-99008323,,,,,
-99575565,,,,,
-95405159,,,,,
-99356304,,,,,
-99002218,,,,,
-92338797,,,,,
-97143617,,,,,
-97001293,,,,,
-97728879,,,,,
-97179459,,,,,
-99429208,,,,,
-95598944,,,,,
-91174545,,,,,
-99379354,,,,,
-99647548,,,,,
-95154536,,,,,
-99345324,,,,,
-99353436,,,,,
-92397079,,,,,
-95258445,,,,,
-92822882,,,,,
-99058569,,,,,
-95096450,,,,,
-99724900,,,,,
-96710619,,,,,
-92207244,,,,,
-99366509,,,,,
-92508886,,,,,
-95576162,,,,,
-92280622,,,,,
-99612283,,,,,
-95571471,,,,,
-95176614,,,,,
-95179043,,,,,
-99000583,,,,,
-95801514,,,,,
-99445078,,,,,
-99609692,,,,,
-99244213,,,,,
-99335280,,,,,
-91333323,,,,,
-99845412,,,,,
-95527729,,,,,
-99084382,,,,,
-95446990,,,,,
-95593994,,,,,
-92909699,,,,,
-92420512,,,,,
-99000392,,,,,
-97253440,,,,,
-96116121,,,,,
-96192070,,,,,
-99370494,,,,,
-96122109,,,,,
-99025476,,,,,
-92144243,,,,,
-92144243,,,,,
-99533997,,,,,
-97397395,,,,,
-95585969,,,,,
-99488074,,,,,
-92960724,,,,,
-99466381,,,,,
-99211082,,,,,
-99350247,,,,,
-95234817,,,,,
-93807728,,,,,
-99022896,,,,,
-77235556,,,,,
-97182008,,,,,
-99417323,,,,,
-95191173,,,,,
-97478188,,,,,
-99059169,,,,,
-95957679,,,,,
-99726830,,,,,
-92596267,,,,,
-99383286,,,,,
-92243601,,,,,
-99808108,,,,,
-98182088,,,,,
-94434961,,,,,
-99455516,,,,,
-97173307,,,,,
-71166998,,,,,
-90955788,,,,,
-97724949,,,,,
-99374281,,,,,
-99350701,,,,,
-99248117,,,,,
-95991912,,,,,
-96564416,,,,,
-91780448,,,,,
-98807678,,,,,
-99418490,,,,,
-92673443,,,,,
-96435774,,,,,
-92281308,,,,,
-99718010,,,,,
-93311631,,,,,
-96308348,,,,,
-99645510,,,,,
-91290981,,,,,
-91118289,,,,,
-99457403,,,,,
-97774927,,,,,
-96010030,,,,,
-95593346,,,,,
-95598729,,,,,
-95079391,,,,,
-99417519,,,,,
-95395033,,,,,
-99788832,,,,,
-99265208,,,,,
-92108988,,,,,
-99229106,,,,,
-98801092,,,,,
-95593384,,,,,
-99875759,,,,`;
+function extractSheetId(url){
+  const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  return match ? match[1] : null;
+}
 
-        // ============================================================
-        // 2. الرابط الأصلي وقائمة البروكسيات (مع مهلة أطول)
-        // ============================================================
-        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-q_lptpKbStQ7FpqLZgCJebAsO5Fc7Y4ZvHIbSjZQZsj6vF6vKXcHAXmgwjrGB9hUlqPRefhQf1s_/pub?gid=0&single=true&output=csv';
-        const PROXIES = [
-            'https://api.allorigins.win/raw?url=',
-            'https://corsproxy.io/?',
-            'https://api.codetabs.com/v1/proxy?quest='
-        ];
-        const TIMEOUT_MS = 30000; // 30 ثانية
-        const RETRY_DELAY = 2000; // 2 ثانية بين المحاولات
+function parseCSV(text){
+  // بارسر بسيط يتعامل مع الفواصل داخل علامات التنصيص
+  const rows = [];
+  let row = [];
+  let field = '';
+  let inQuotes = false;
 
-        // ============================================================
-        // 3. عناصر DOM
-        // ============================================================
-        const statusText = document.getElementById('statusText');
-        const loaderSpinner = document.getElementById('loaderSpinner');
-        const retryBtn = document.getElementById('retryBtn');
-        const statsGrid = document.getElementById('statsGrid');
-        const tableBody = document.getElementById('tableBody');
-        const totalSpan = document.getElementById('totalCount');
-        const citySpan = document.getElementById('cityCount');
-        const badge = document.getElementById('dataSourceBadge');
-        const lastUpdateTime = document.getElementById('lastUpdateTime');
+  for(let i=0; i<text.length; i++){
+    const c = text[i];
+    const next = text[i+1];
 
-        // ============================================================
-        // 4. دوال تحليل وعرض البيانات
-        // ============================================================
-        function parseAndRender(csvText, source = 'مباشر') {
-            const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
-            if (lines.length === 0) throw new Error('الملف فارغ');
+    if(inQuotes){
+      if(c === '"' && next === '"'){ field += '"'; i++; }
+      else if(c === '"'){ inQuotes = false; }
+      else { field += c; }
+    } else {
+      if(c === '"'){ inQuotes = true; }
+      else if(c === ','){ row.push(field); field = ''; }
+      else if(c === '\r'){ /* تجاهل */ }
+      else if(c === '\n'){ row.push(field); rows.push(row); row = []; field = ''; }
+      else { field += c; }
+    }
+  }
+  if(field.length > 0 || row.length > 0){ row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 0 && !(r.length === 1 && r[0] === ''));
+}
 
-            const headers = lines[0].split(',').map(h => h.trim());
-            const rows = [];
-            for (let i = 1; i < lines.length; i++) {
-                const cells = lines[i].split(',');
-                const row = headers.map((_, j) => (j < cells.length ? cells[j].trim() : ''));
-                rows.push(row);
-            }
+async function loadSheet(){
+  const statusEl = document.getElementById('status');
+  const btn = document.getElementById('loadBtn');
+  const table = document.getElementById('resultTable');
+  const summary = document.getElementById('summary');
+  const body = document.getElementById('resultBody');
 
-            const counts = headers.map(() => 0);
-            for (const row of rows) {
-                for (let j = 0; j < row.length && j < headers.length; j++) {
-                    if (row[j] !== '' && row[j] !== null && row[j] !== undefined) {
-                        counts[j]++;
-                    }
-                }
-            }
+  const url = document.getElementById('sheetUrl').value.trim();
+  const sheetId = extractSheetId(url);
 
-            // تخزين البيانات الحالية
-            window.__cachedData = { headers, counts };
+  if(!sheetId){
+    statusEl.textContent = 'رابط الجدول غير صالح. الرجاء التأكد من الرابط.';
+    statusEl.classList.add('error');
+    return;
+  }
 
-            // عرض البطاقات
-            statsGrid.innerHTML = '';
-            headers.forEach((city, idx) => {
-                const card = document.createElement('div');
-                card.className = 'stat-card';
-                card.innerHTML = `
-                    <div class="stat-city">${city}</div>
-                    <div class="stat-number">${counts[idx]}</div>
-                    <div class="stat-label">رقم مسجل</div>
-                `;
-                statsGrid.appendChild(card);
-            });
+  btn.disabled = true;
+  statusEl.classList.remove('error');
+  statusEl.textContent = 'جارٍ تحميل البيانات من جوجل شيت...';
+  table.style.display = 'none';
+  summary.style.display = 'none';
 
-            // عرض الجدول
-            tableBody.innerHTML = '';
-            let total = 0;
-            headers.forEach((city, idx) => {
-                total += counts[idx];
-                const tr = document.createElement('tr');
-                if (idx % 2 === 0) tr.classList.add('highlight-row');
-                const status = counts[idx] > 0 ? '✅ نشط' : '⚪ فارغ';
-                tr.innerHTML = `
-                    <td>${idx + 1}</td>
-                    <td><strong>${city}</strong></td>
-                    <td>${counts[idx]}</td>
-                    <td>${status}</td>
-                `;
-                tableBody.appendChild(tr);
-            });
+  const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
 
-            totalSpan.textContent = total;
-            citySpan.textContent = headers.length;
-            badge.textContent = source === 'مباشر' ? '🌐 مباشر' : '📁 مخبأ';
-            lastUpdateTime.textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString();
-        }
+  try{
+    const res = await fetch(csvUrl);
+    if(!res.ok){
+      throw new Error('تعذر الوصول إلى الجدول. تأكد من أن الجدول متاح للعرض للجميع.');
+    }
+    const text = await res.text();
 
-        // عرض البيانات المخبأة (إن وجدت) أو النسخة الاحتياطية
-        function renderFallback() {
-            try {
-                parseAndRender(FALLBACK_CSV, 'مخبأ');
-                statusText.innerHTML = '📋 عرض البيانات المحفوظة (نسخة احتياطية)';
-                loaderSpinner.style.display = 'none';
-            } catch (e) {
-                console.error('فشل عرض النسخة الاحتياطية', e);
-                statsGrid.innerHTML = `<div class="error-placeholder" style="grid-column:1/-1;padding:30px;text-align:center;color:#dc2626;">لا توجد بيانات متاحة</div>`;
-            }
-        }
+    if(text.trim().startsWith('<')){
+      throw new Error('الجدول غير متاح للعرض العام. الرجاء تغيير إعدادات المشاركة إلى "أي شخص لديه الرابط".');
+    }
 
-        // ============================================================
-        // 5. جلب البيانات مع إعادة محاولة تلقائية
-        // ============================================================
-        async function fetchWithTimeout(url, timeout) {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), timeout);
-            try {
-                const response = await fetch(url, { signal: controller.signal });
-                clearTimeout(timeoutId);
-                return response;
-            } catch (error) {
-                clearTimeout(timeoutId);
-                throw error;
-            }
-        }
+    const rows = parseCSV(text);
+    if(rows.length === 0){
+      throw new Error('لم يتم العثور على بيانات في الجدول.');
+    }
 
-        async function fetchDataWithProxies() {
-            if (window.__fetching) return;
-            window.__fetching = true;
-            loaderSpinner.style.display = 'inline-block';
-            statusText.innerHTML = '⏳ جاري تحديث البيانات...';
-            retryBtn.disabled = true;
+    const headers = rows[0];
+    const dataRows = rows.slice(1);
 
-            let success = false;
-            let lastError = null;
+    const counts = headers.map((h, colIndex) => {
+      let count = 0;
+      for(const r of dataRows){
+        const val = (r[colIndex] || '').toString().trim();
+        if(val !== '') count++;
+      }
+      return { name: h && h.trim() !== '' ? h.trim() : `عمود ${colIndex + 1}`, count };
+    });
 
-            for (let proxy of PROXIES) {
-                try {
-                    const url = proxy + encodeURIComponent(CSV_URL);
-                    const response = await fetchWithTimeout(url, TIMEOUT_MS);
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const maxCount = Math.max(...counts.map(c => c.count), 1);
+    const totalEntries = counts.reduce((s,c)=>s+c.count,0);
 
-                    const csvText = await response.text();
-                    if (csvText.includes('<html') || !csvText.includes(',')) {
-                        throw new Error('البيانات ليست CSV صالحة');
-                    }
+    // ملخص
+    summary.innerHTML = `
+      <div class="box"><div class="num">${headers.length}</div><div class="label">عدد الأعمدة</div></div>
+      <div class="box"><div class="num">${dataRows.length}</div><div class="label">عدد الصفوف</div></div>
+      <div class="box"><div class="num">${totalEntries}</div><div class="label">إجمالي البيانات المسجلة</div></div>
+    `;
+    summary.style.display = 'flex';
 
-                    // نجاح
-                    parseAndRender(csvText, 'مباشر');
-                    statusText.innerHTML = '✅ تم تحديث البيانات بنجاح';
-                    success = true;
-                    break;
+    // جدول النتائج
+    body.innerHTML = counts.map(c => `
+      <tr>
+        <td class="col-name">${c.name}</td>
+        <td>${c.count}</td>
+        <td>
+          <div class="bar-wrap"><div class="bar" style="width:${(c.count/maxCount*100).toFixed(0)}%"></div></div>
+        </td>
+      </tr>
+    `).join('');
+    table.style.display = 'table';
 
-                } catch (error) {
-                    lastError = error;
-                    console.warn('Proxy failed:', proxy, error);
-                    // ننتظر قليلاً قبل المحاولة التالية
-                    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-                }
-            }
+    statusEl.textContent = `تم التحديث بنجاح — ${new Date().toLocaleString('ar-OM')}`;
+  } catch(err){
+    statusEl.classList.add('error');
+    statusEl.textContent = err.message || 'حدث خطأ أثناء تحميل البيانات.';
+  } finally {
+    btn.disabled = false;
+  }
+}
 
-            if (!success) {
-                statusText.innerHTML = `⚠️ فشل التحديث: ${lastError?.message || 'خطأ غير معروف'}`;
-                // عرض البيانات المخبأة إذا كانت موجودة
-                if (window.__cachedData && window.__cachedData.headers.length > 0) {
-                    const { headers, counts } = window.__cachedData;
-                    // إعادة عرض البيانات المخبأة (نستخدم دالة مساعدة)
-                    statsGrid.innerHTML = '';
-                    headers.forEach((city, idx) => {
-                        const card = document.createElement('div');
-                        card.className = 'stat-card';
-                        card.innerHTML = `
-                            <div class="stat-city">${city}</div>
-                            <div class="stat-number">${counts[idx] || 0}</div>
-                            <div class="stat-label">رقم مسجل</div>
-                        `;
-                        statsGrid.appendChild(card);
-                    });
-                    tableBody.innerHTML = '';
-                    let total = 0;
-                    headers.forEach((city, idx) => {
-                        total += counts[idx] || 0;
-                        const tr = document.createElement('tr');
-                        if (idx % 2 === 0) tr.classList.add('highlight-row');
-                        const status = (counts[idx] || 0) > 0 ? '✅ نشط' : '⚪ فارغ';
-                        tr.innerHTML = `
-                            <td>${idx + 1}</td>
-                            <td><strong>${city}</strong></td>
-                            <td>${counts[idx] || 0}</td>
-                            <td>${status}</td>
-                        `;
-                        tableBody.appendChild(tr);
-                    });
-                    totalSpan.textContent = total;
-                    citySpan.textContent = headers.length;
-                    badge.textContent = '📁 مخبأ';
-                    statusText.innerHTML += ' (عرض البيانات المخبأة)';
-                } else {
-                    // لا يوجد مخبأ، نستخدم النسخة الاحتياطية
-                    renderFallback();
-                }
-            }
-
-            loaderSpinner.style.display = 'none';
-            retryBtn.disabled = false;
-            window.__fetching = false;
-        }
-
-        // ============================================================
-        // 6. بدء التشغيل
-        // ============================================================
-        // عرض النسخة الاحتياطية فوراً
-        renderFallback();
-
-        // ثم محاولة جلب البيانات من الرابط
-        setTimeout(() => {
-            fetchDataWithProxies();
-        }, 500);
-
-        // إعادة المحاولة يدوياً
-        retryBtn.addEventListener('click', fetchDataWithProxies);
-
-        // التحديث التلقائي كل دقيقة
-        setInterval(fetchDataWithProxies, 60000);
-
-        console.log('✅ تم تهيئة الصفحة، سيتم التحديث كل 60 ثانية.');
-    })();
+// تحميل تلقائي عند فتح الصفحة
+window.addEventListener('DOMContentLoaded', loadSheet);
 </script>
 </body>
 </html>
