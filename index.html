@@ -170,7 +170,7 @@
       <tr>
         <th>اسم الولاية</th>
         <th>عدد الطلبات المسجلة</th>
-        <th> </th>
+        <th>      </th>
       </tr>
     </thead>
     <tbody id="resultBody"></tbody>
@@ -273,8 +273,6 @@ async function loadSheet(){
 
     // ملخص
     summary.innerHTML = `
-      <div class="box"><div class="num">${headers.length}</div><div class="label">عدد الأعمدة</div></div>
-      <div class="box"><div class="num">${dataRows.length}</div><div class="label">عدد الصفوف</div></div>
       <div class="box"><div class="num">${totalEntries}</div><div class="label">إجمالي البيانات المسجلة</div></div>
     `;
     summary.style.display = 'flex';
