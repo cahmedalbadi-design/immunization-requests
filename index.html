@@ -3,176 +3,371 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>طالبات التحصين في شمال الباطنة</title>
+<title>طلبات التحصين في شمال الباطنة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Changa:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --primary:#0f766e;
-    --primary-dark:#0b5c56;
-    --bg:#f4f7f6;
+    --primary-dark:#0a4f4a;
+    --primary-deep:#083d39;
+    --gold:#c9a227;
+    --bg:#eef4f3;
     --card:#ffffff;
-    --border:#e2e8e7;
-    --text:#1f2937;
-    --muted:#6b7280;
+    --border:#dbe7e5;
+    --text:#122624;
+    --muted:#5f7472;
+    --success:#15803d;
+    --danger:#dc2626;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(8,61,57,.05), 0 4px 14px rgba(8,61,57,.07);
   }
   *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
   body{
     margin:0;
-    font-family:'Segoe UI', Tahoma, Arial, sans-serif;
-    background:var(--bg);
+    font-family:'IBM Plex Sans Arabic', Tahoma, Arial, sans-serif;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(15,118,110,.08), transparent 60%),
+      var(--bg);
     color:var(--text);
-    padding:24px;
+    padding:24px 16px 40px;
+    min-height:100vh;
   }
-  .container{
-    max-width:900px;
-    margin:0 auto;
+  .container{ max-width:940px; margin:0 auto; }
+
+  /* ===== الترويسة ===== */
+  .hero{
+    position:relative;
+    background:linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-dark) 55%, var(--primary) 100%);
+    color:#fff;
+    border-radius:var(--radius);
+    padding:28px 28px 24px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+    margin-bottom:20px;
   }
-  h1{
-    text-align:center;
-    font-size:22px;
-    color:var(--primary-dark);
-    margin-bottom:4px;
+  .hero::before{
+    content:'';
+    position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M28 4 L52 28 L28 52 L4 28 Z' fill='none' stroke='rgba(255,255,255,0.07)' stroke-width='1.4'/%3E%3Cpath d='M28 16 L40 28 L28 40 L16 28 Z' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1'/%3E%3C/svg%3E");
+    background-size:56px 56px;
+    pointer-events:none;
   }
-  .subtitle{
-    text-align:center;
-    color:var(--muted);
-    font-size:14px;
-    margin-bottom:24px;
-  }
-  .controls{
+  .hero .eyebrow{
+    position:relative;
+    font-size:12.5px;
+    letter-spacing:.3px;
+    color:#a7dcd5;
+    margin-bottom:6px;
     display:flex;
-    gap:10px;
-    justify-content:center;
+    align-items:center;
+    gap:8px;
+  }
+  .hero h1{
+    position:relative;
+    font-family:'Changa','IBM Plex Sans Arabic',sans-serif;
+    font-weight:800;
+    font-size:clamp(20px, 3.4vw, 30px);
+    margin:0 0 6px;
+    line-height:1.35;
+  }
+  .hero .sub{
+    position:relative;
+    font-size:13.5px;
+    color:#cfe9e5;
+    margin:0;
+  }
+  .live{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:999px;
+    padding:4px 12px;
+    font-size:12px;
+    margin-top:14px;
+  }
+  .live .dot{
+    width:8px; height:8px; border-radius:50%;
+    background:#4ade80;
+    box-shadow:0 0 0 0 rgba(74,222,128,.6);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(74,222,128,.55); }
+    70%{ box-shadow:0 0 0 9px rgba(74,222,128,0); }
+    100%{ box-shadow:0 0 0 0 rgba(74,222,128,0); }
+  }
+  /* شريط العد التنازلي */
+  .refresh-track{
+    position:absolute;
+    bottom:0; right:0; left:0;
+    height:4px;
+    background:rgba(255,255,255,.15);
+  }
+  .refresh-bar{
+    height:100%;
+    background:linear-gradient(90deg, #4ade80, #a7f3d0);
+    width:100%;
+    transition:width 1s linear;
+  }
+
+  /* ===== شريط التحكم ===== */
+  .toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
     flex-wrap:wrap;
-    margin-bottom:24px;
+    margin-bottom:18px;
   }
-  input[type=text]{
-    flex:1;
-    min-width:260px;
-    padding:10px 14px;
-    border:1px solid var(--border);
-    border-radius:8px;
-    font-size:14px;
+  .status{
+    font-size:13.5px;
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-height:22px;
   }
-  button{
+  .status.error{ color:var(--danger); font-weight:600; }
+  .status.ok::before{
+    content:'✓';
+    display:inline-flex;
+    align-items:center; justify-content:center;
+    width:18px; height:18px;
+    border-radius:50%;
+    background:#dcfce7;
+    color:var(--success);
+    font-size:11px;
+    font-weight:700;
+  }
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
     background:var(--primary);
     color:#fff;
     border:none;
-    padding:10px 20px;
-    border-radius:8px;
+    padding:10px 22px;
+    border-radius:10px;
     font-size:14px;
+    font-family:inherit;
+    font-weight:600;
     cursor:pointer;
-    transition:background .2s;
+    transition:background .2s, transform .15s;
+    box-shadow:var(--shadow);
   }
-  button:hover{ background:var(--primary-dark); }
-  button:disabled{ background:#9ca3af; cursor:not-allowed; }
+  .btn:hover{ background:var(--primary-dark); }
+  .btn:active{ transform:scale(.97); }
+  .btn:disabled{ background:#9ca3af; cursor:not-allowed; transform:none; }
+  .btn:focus-visible{ outline:3px solid #99e2da; outline-offset:2px; }
+  .btn .icon{ transition:transform .5s; }
+  .btn.loading .icon{ animation:spin 1s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
 
-  .status{
-    text-align:center;
-    color:var(--muted);
-    font-size:14px;
-    margin-bottom:16px;
-    min-height:20px;
-  }
-  .status.error{ color:#dc2626; }
-
+  /* ===== بطاقات الملخص ===== */
   .summary{
-    display:flex;
-    justify-content:center;
-    gap:16px;
-    flex-wrap:wrap;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+    gap:14px;
     margin-bottom:20px;
   }
-  .summary .box{
+  .box{
     background:var(--card);
     border:1px solid var(--border);
-    border-radius:10px;
-    padding:14px 20px;
-    text-align:center;
-    min-width:120px;
+    border-radius:var(--radius);
+    padding:18px 20px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
   }
-  .summary .box .num{
-    font-size:24px;
-    font-weight:700;
+  .box::after{
+    content:'';
+    position:absolute;
+    top:0; right:0;
+    width:4px; height:100%;
+    background:var(--primary);
+    border-radius:0 var(--radius) var(--radius) 0;
+  }
+  .box.top::after{ background:var(--gold); }
+  .box .num{
+    font-family:'Changa',sans-serif;
+    font-size:30px;
+    font-weight:800;
     color:var(--primary-dark);
+    line-height:1.15;
   }
-  .summary .box .label{
-    font-size:12px;
+  .box.top .num{ font-size:20px; }
+  .box .label{
+    font-size:12.5px;
     color:var(--muted);
     margin-top:4px;
   }
 
-  table{
-    width:100%;
-    border-collapse:collapse;
+  /* ===== الجدول ===== */
+  .table-card{
     background:var(--card);
-    border-radius:10px;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
     overflow:hidden;
-    box-shadow:0 1px 3px rgba(0,0,0,0.06);
   }
+  table{ width:100%; border-collapse:collapse; }
   thead th{
-    background:var(--primary);
+    background:var(--primary-dark);
     color:#fff;
-    padding:12px 10px;
-    font-size:14px;
+    padding:13px 12px;
+    font-size:13.5px;
+    font-weight:600;
     text-align:center;
+    white-space:nowrap;
   }
   tbody td{
-    padding:10px;
+    padding:12px 12px;
     border-bottom:1px solid var(--border);
     text-align:center;
     font-size:14px;
   }
   tbody tr:last-child td{ border-bottom:none; }
+  tbody tr{ transition:background .15s; }
   tbody tr:hover{ background:#f0fdfa; }
+  tbody tr.rank-1{ background:linear-gradient(90deg, #fefce8, transparent 70%); }
+
+  .rank-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:28px; height:28px;
+    border-radius:50%;
+    font-family:'Changa',sans-serif;
+    font-weight:700;
+    font-size:14px;
+    background:#eef4f3;
+    color:var(--muted);
+  }
+  .rank-1 .rank-badge{ background:#fde68a; color:#92400e; }
+  .rank-2 .rank-badge{ background:#e5e7eb; color:#374151; }
+  .rank-3 .rank-badge{ background:#fed7aa; color:#9a3412; }
+
   .col-name{
     font-weight:600;
     color:var(--primary-dark);
+    text-align:right !important;
   }
+  .col-count{
+    font-family:'Changa',sans-serif;
+    font-weight:700;
+    font-size:16px;
+  }
+  .col-pct{ color:var(--muted); font-size:12.5px; }
+
   .bar-wrap{
-    background:#e5f5f3;
+    background:#e5f1ef;
     border-radius:6px;
     overflow:hidden;
-    height:10px;
-    width:100%;
+    height:12px;
+    min-width:120px;
   }
   .bar{
-    background:var(--primary);
+    background:linear-gradient(90deg, var(--primary), #14b8a6);
     height:100%;
     border-radius:6px;
+    width:0;
+    transition:width .8s cubic-bezier(.2,.7,.3,1);
   }
-  @media print{
-    .controls, button{ display:none; }
+  .rank-1 .bar{ background:linear-gradient(90deg, #ca8a04, #facc15); }
+
+  /* ===== هيكل التحميل ===== */
+  .skeleton{
+    display:grid;
+    gap:10px;
+    padding:20px;
   }
+  .skeleton .line{
+    height:16px;
+    border-radius:6px;
+    background:linear-gradient(90deg, #e8efee 25%, #f5faf9 50%, #e8efee 75%);
+    background-size:200% 100%;
+    animation:shimmer 1.4s infinite;
+  }
+  @keyframes shimmer{ to{ background-position:-200% 0; } }
+
   footer{
     text-align:center;
     color:var(--muted);
     font-size:12px;
-    margin-top:24px;
+    margin-top:26px;
+    line-height:1.9;
+  }
+
+  @media (max-width:560px){
+    body{ padding:14px 10px 30px; }
+    .hero{ padding:20px 18px; }
+    .col-pct{ display:none; }
+    thead th:nth-child(4), tbody td:nth-child(4){ display:none; }
+  }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    .toolbar, .live, .refresh-track, #countdown{ display:none !important; }
+    .hero{ box-shadow:none; border-radius:0; }
+    .box, .table-card{ box-shadow:none; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
   }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>📊إجمالي البيانات المسجلة في طلبات التحصين</h1>
-  <div class="controls">
-    <button id="loadBtn" onclick="loadSheet()">تحديث البيانات الآن</button>
+
+  <div class="hero">
+    <div class="eyebrow">وزارة الثروة الزراعية والسمكية وموارد المياه · محافظة شمال الباطنة</div>
+    <h1>📊 لوحة متابعة طلبات التحصين</h1>
+    <p class="sub">إجمالي البيانات المسجلة حسب الولاية — تحديث مباشر من قاعدة البيانات</p>
+    <span class="live"><span class="dot"></span> <span id="countdown">مزامنة تلقائية</span></span>
+    <div class="refresh-track"><div class="refresh-bar" id="refreshBar"></div></div>
   </div>
 
-  <div class="status" id="status">جارٍ التحميل...</div>
-  <div class="status" id="countdown" style="font-size:12px;"></div>
+  <div class="toolbar">
+    <div class="status" id="status">جارٍ التحميل...</div>
+    <button id="loadBtn" class="btn" onclick="loadSheet()">
+      <span class="icon">⟳</span> تحديث البيانات الآن
+    </button>
+  </div>
 
   <div class="summary" id="summary" style="display:none;"></div>
 
-  <table id="resultTable" style="display:none;">
-    <thead>
-      <tr>
-        <th>اسم الولاية</th>
-        <th>عدد الطلبات المسجلة</th>
-        <th>      </th>
-      </tr>
-    </thead>
-    <tbody id="resultBody"></tbody>
-  </table>
+  <div class="table-card">
+    <div class="skeleton" id="skeleton">
+      <div class="line" style="width:90%"></div>
+      <div class="line" style="width:75%"></div>
+      <div class="line" style="width:85%"></div>
+      <div class="line" style="width:60%"></div>
+    </div>
+    <table id="resultTable" style="display:none;">
+      <thead>
+        <tr>
+          <th style="width:56px;">#</th>
+          <th style="text-align:right;">اسم الولاية</th>
+          <th>عدد الطلبات</th>
+          <th>النسبة</th>
+          <th style="width:34%;">المؤشر</th>
+        </tr>
+      </thead>
+      <tbody id="resultBody"></tbody>
+    </table>
+  </div>
+
+  <footer>
+    مديرية عامة الثروة الزراعية والسمكية وموارد المياه بمحافظة شمال الباطنة<br>
+    آخر تحديث: <span id="lastUpdate">—</span>
+  </footer>
 </div>
 
 <script>
@@ -219,20 +414,20 @@ async function loadSheet(){
   const table = document.getElementById('resultTable');
   const summary = document.getElementById('summary');
   const body = document.getElementById('resultBody');
+  const skeleton = document.getElementById('skeleton');
 
   const sheetId = extractSheetId(SHEET_URL);
 
   if(!sheetId){
     statusEl.textContent = 'رابط الجدول غير صالح. الرجاء التأكد من الرابط.';
-    statusEl.classList.add('error');
+    statusEl.className = 'status error';
     return;
   }
 
   btn.disabled = true;
-  statusEl.classList.remove('error');
+  btn.classList.add('loading');
+  statusEl.className = 'status';
   statusEl.textContent = 'جارٍ تحميل البيانات من جوجل شيت...';
-  table.style.display = 'none';
-  summary.style.display = 'none';
 
   const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
 
@@ -255,7 +450,7 @@ async function loadSheet(){
     const headers = rows[0];
     const dataRows = rows.slice(1);
 
-    const counts = headers.map((h, colIndex) => {
+    let counts = headers.map((h, colIndex) => {
       let count = 0;
       for(const r of dataRows){
         const val = (r[colIndex] || '').toString().trim();
@@ -264,33 +459,56 @@ async function loadSheet(){
       return { name: h && h.trim() !== '' ? h.trim() : `عمود ${colIndex + 1}`, count };
     });
 
+    // ترتيب تنازلي حسب عدد الطلبات
+    counts.sort((a, b) => b.count - a.count);
+
     const maxCount = Math.max(...counts.map(c => c.count), 1);
     const totalEntries = counts.reduce((s,c)=>s+c.count,0);
+    const topWilaya = counts[0];
+    const avg = counts.length ? Math.round(totalEntries / counts.length) : 0;
 
-    // ملخص
+    // بطاقات الملخص
     summary.innerHTML = `
-      <div class="box"><div class="num">${totalEntries}</div><div class="label">إجمالي البيانات المسجلة</div></div>
+      <div class="box"><div class="num">${totalEntries.toLocaleString('ar-EG')}</div><div class="label">إجمالي الطلبات المسجلة</div></div>
+      <div class="box"><div class="num">${counts.length.toLocaleString('ar-EG')}</div><div class="label">عدد الولايات</div></div>
+      <div class="box"><div class="num">${avg.toLocaleString('ar-EG')}</div><div class="label">متوسط الطلبات لكل ولاية</div></div>
+      <div class="box top"><div class="num">🏆 ${topWilaya ? topWilaya.name : '—'}</div><div class="label">الأعلى تسجيلاً (${topWilaya ? topWilaya.count.toLocaleString('ar-EG') : 0} طلب)</div></div>
     `;
-    summary.style.display = 'flex';
+    summary.style.display = 'grid';
 
-    // جدول النتائج
-    body.innerHTML = counts.map(c => `
-      <tr>
+    // صفوف الجدول
+    body.innerHTML = counts.map((c, i) => {
+      const pct = totalEntries > 0 ? (c.count / totalEntries * 100) : 0;
+      const barPct = (c.count / maxCount * 100).toFixed(0);
+      return `
+      <tr class="rank-${i+1}">
+        <td><span class="rank-badge">${(i+1).toLocaleString('ar-EG')}</span></td>
         <td class="col-name">${c.name}</td>
-        <td>${c.count}</td>
-        <td>
-          <div class="bar-wrap"><div class="bar" style="width:${(c.count/maxCount*100).toFixed(0)}%"></div></div>
-        </td>
-      </tr>
-    `).join('');
+        <td class="col-count">${c.count.toLocaleString('ar-EG')}</td>
+        <td class="col-pct">${pct.toFixed(1)}٪</td>
+        <td><div class="bar-wrap"><div class="bar" data-w="${barPct}"></div></div></td>
+      </tr>`;
+    }).join('');
+
+    skeleton.style.display = 'none';
     table.style.display = 'table';
 
-    statusEl.textContent = `تم التحديث بنجاح — ${new Date().toLocaleString('ar-OM')}`;
+    // تحريك الأشرطة بعد الرسم
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.bar').forEach(b => { b.style.width = b.dataset.w + '%'; });
+    });
+
+    const now = new Date().toLocaleString('ar-OM');
+    statusEl.className = 'status ok';
+    statusEl.textContent = 'تم التحديث بنجاح';
+    document.getElementById('lastUpdate').textContent = now;
   } catch(err){
-    statusEl.classList.add('error');
+    statusEl.className = 'status error';
     statusEl.textContent = err.message || 'حدث خطأ أثناء تحميل البيانات.';
+    skeleton.style.display = 'none';
   } finally {
     btn.disabled = false;
+    btn.classList.remove('loading');
     resetCountdown();
   }
 }
@@ -306,7 +524,9 @@ function resetCountdown(){
 
 function updateCountdownText(){
   const el = document.getElementById('countdown');
-  if(el) el.textContent = `التحديث التلقائي التالي خلال ${secondsLeft} ثانية`;
+  if(el) el.textContent = `التحديث التلقائي خلال ${secondsLeft.toLocaleString('ar-EG')} ثانية`;
+  const bar = document.getElementById('refreshBar');
+  if(bar) bar.style.width = (secondsLeft / REFRESH_INTERVAL_SECONDS * 100) + '%';
 }
 
 function startCountdown(){
