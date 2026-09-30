@@ -845,7 +845,19 @@
     document.getElementById('dot'+currentStep).classList.add('active');
     window.scrollTo(0,0);
   }
-
+// تحويل الأرقام العربية/الفارسية إلى إنجليزية وتوحيد الشرطة
+function normalizeLicenseNum(str) {
+  return String(str || '')
+    // الأرقام الهندية العربية ٠-٩
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+    // الأرقام الفارسية ۰-۹
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    // توحيد كل أنواع الشرط المائلة
+    .replace(/[\/\\∕／⁄]/g, '/')
+    // إزالة أي شيء ليس رقماً أو شرطة مائلة
+    .replace(/[^\d\/]/g, '')
+    .trim();
+}
   function validateStep(step) {
     let valid = true;
     if (step===1) {
@@ -861,7 +873,10 @@ if (step===2) {
       if (!licVal) { licErr.classList.add('show'); valid=false; } else licErr.classList.remove('show');
     }
     if (step===3) {
-valid = checkField('licenseNum',    v=>/^\d+$/.test(v.trim()) || /^\d{2}\s*\/\s*\d+$/.test(v.trim())) && valid;
+valid = checkField('licenseNum', v => {
+  const n = normalizeLicenseNum(v);
+  return /^\d+$/.test(n) || /^\d{2}\/\d+$/.test(n);
+}) && valid;
      valid = checkField('licenseExpiry', v=>v.trim()!=='')       && valid;
     }
 if (step===4) {
@@ -963,7 +978,7 @@ function resetForm() {
         p_phone:      v('phone'),
         p_name:       v('fullName'),
         p_region:     v('region'),
-        p_possession: skipLicense ? '' : v('licenseNum'),
+        p_possession: skipLicense ? '' : normalizeLicenseNum(v('licenseNum')),
         p_civil:      v('civilId'),
         p_expiry:     skipLicense ? null : (v('licenseExpiry') || null),
         p_goats:      num('goats'),
@@ -995,7 +1010,14 @@ function resetForm() {
     document.getElementById('loadingOverlay').classList.remove('show');
     document.getElementById('loadingText').textContent='جارٍ التحميل...';
   }
-
+// تنظيف رقم الحيازة تلقائياً أثناء الكتابة
+document.getElementById('licenseNum').addEventListener('input', function() {
+  const pos = this.selectionStart;
+  const before = this.value;
+  this.value = normalizeLicenseNum(before);
+  const diff = before.length - this.value.length;
+  this.setSelectionRange(pos - diff, pos - diff);
+});
   initPage();
 </script>
 </body>
