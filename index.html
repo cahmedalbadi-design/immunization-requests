@@ -152,7 +152,23 @@
     animation: spin 0.8s linear infinite;
   }
   #initScreen span { font-size: 15px; }
-
+  .init-designer {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 16px;
+    padding: 20px 28px;
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.9;
+    max-width: 90vw;
+  }
+  .init-designer img {
+    width: 100px; height: 100px;
+    object-fit: cover; border-radius: 50%;
+    border: 3px solid white;
+    display: block; margin: 0 auto 10px;
+  }
+  .init-designer-title { font-size: 13px; opacity: 0.85; }
   /* شاشة النموذج مغلق */
   #closedScreen {
     display: none; position: fixed; inset: 0;
@@ -410,6 +426,12 @@
 
 <!-- شاشة التحميل الأولي -->
 <div id="initScreen">
+  <div class="init-designer">
+    <img src="https://dlivsidtmmtvrqhtxmlu.supabase.co/storage/v1/object/public/assets/WhatsApp%20Image%202026-09-25%20at%204.05.40%20PM.jpeg" alt="صورة المصمم">
+    <div class="init-designer-title">صُمِّم بواسطة</div>
+    <div>أحمد بن علي بن سيف البادي</div>
+    <div>فني حقول — دائرة الثروة الحيوانية</div>
+  </div>
   <div class="spinner"></div>
   <span>جارٍ التحقق من حالة النموذج...</span>
 </div>
@@ -687,8 +709,7 @@
         'تعذّر الاتصال بالخادم — يُرجى المحاولة لاحقاً.';
     }
     applyStatus(serverStatus);
-    document.getElementById('initScreen').style.display = 'none';
-  }
+    setTimeout(() => { document.getElementById('initScreen').style.display = 'none'; }, 2500);  }
 
   function applyStatus(s) {
     serverStatus = s;
@@ -1005,7 +1026,7 @@ function resetForm() {
     document.getElementById('loadingText').textContent='جارٍ التحميل...';
   }
 
-  initPage().then(openDesignerModal);
+  initPage();
 </script>
 </body>
 </html>
