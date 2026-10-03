@@ -22,7 +22,7 @@
   100% { filter: drop-shadow(0 0 18px rgba(255, 215, 0, 0.9)) brightness(1.25); }
 }
 
-/* نافذة المصمم (مودال) */
+/* نافذة الم (مودال) */
 .designer-modal {
   display: none;
   position: fixed;
@@ -68,6 +68,15 @@
 .designer-icon {
   font-size: 48px;
   margin-bottom: 12px;
+}
+ .designer-icon img {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #1a5c38;
+  display: block;
+  margin: 0 auto;
 }
 .designer-title {
   font-size: 18px;
@@ -466,12 +475,12 @@
 
 </div>
 
-<!-- نافذة المصمم (مودال) -->
+<!-- نافذة الم (مودال) -->
 <div class="designer-modal" id="designerModal" onclick="if(event.target===this) closeDesignerModal()">
   <div class="designer-card">
     <button class="designer-close" onclick="closeDesignerModal()">✕</button>
-    <div class="designer-icon">🖌️</div>
-    <div class="designer-title">صُمِّم بواسطة</div>
+    <div class="designer-icon"><img src="https://dlivsidtmmtvrqhtxmlu.supabase.co/storage/v1/object/public/assets/WhatsApp%20Image%202026-09-25%20at%204.05.40%20PM.jpeg" alt="صورة المصمم"></div>
+   <div class="designer-title">صُمِّم بواسطة</div>
     <div class="designer-info">
       <div><strong>الاسم:</strong> أحمد بن علي بن سيف البادي</div>
       <div><strong>الوظيفة:</strong> فني حقول</div>
@@ -503,7 +512,7 @@
 <div class="form-title">
   <div style="display: flex; align-items: center; gap: 6px; flex-wrap: nowrap;">
     <h1 style="margin: 0; font-size: 22px; flex: 1; min-width: 0;">تسجل طلبات التحصين بمحافظة شمال الباطنة</h1>
-    <!-- تم إضافة onclick لفتح نافذة المصمم -->
+    <!-- تم إضافة onclick لفتح نافذة الم -->
     <img src="https://drive.google.com/thumbnail?id=1SCikSeDL7RJvNZ9Zo52S2P0DIA1gMHoj&sz=w1000" alt="شعار" class="logo-glow" onclick="openDesignerModal()" style="max-height: 90px; width: auto; flex-shrink: 0; margin-inline-start: auto;">
   </div>
   <p class="required-note" style="margin-top: 6px;">* تشير إلى أنّ السؤال مطلوب</p>
@@ -686,7 +695,7 @@
     document.getElementById('closedScreen').classList.toggle('show', s === 'CLOSED');
   }
 
-  // ----- دوال نافذة المصمم -----
+  // ----- دوال نافذة الم -----
   function openDesignerModal() {
     document.getElementById('designerModal').classList.add('show');
     document.body.style.overflow = 'hidden'; // منع التمرير خلف النافذة
