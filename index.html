@@ -1005,7 +1005,7 @@ function resetForm() {
     document.getElementById('loadingText').textContent='جارٍ التحميل...';
   }
 
-  initPage();
+  initPage().then(openDesignerModal);
 </script>
 </body>
 </html>
